@@ -189,9 +189,9 @@ body{
       return urlParams.get(name);
     }
   // Fetch channels from JSON - NO LOADING INDICATOR
-    async function fetchChannels(https://offsidejson.vercel.app/channel.json) {
+    async function fetchChannels() {
       try {
-        const url = ${CHANNELS_JSON_URL}?t=${Date.now()};
+        const url = ${https://offsidejson.vercel.app/channel.json}?t=${Date.now()};
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -230,10 +230,31 @@ body{
           }
         }
         
-        if (!allChannels ⠵⠟⠞⠺⠵⠺⠟⠞⠵⠺⠞⠺⠵⠟⠞⠺⠺⠟⠺⠺⠟⠞⠵⠺⠵⠟⠞⠞⠟⠵⠞⠟⠟⠞⠺⠟⠺⠺⠟⠵⠞⠟⠵⠵⠞⠞⠺⠵⠵⠟⠞⠺⠟⠟⠞⠟⠺⠵⠵⠺⠞⠺⠵⠵⠟⠵⠺⠺⠺⠵⠟⠟⠞⠵⠵⠵⠵⠞⠺⠵⠞⠺⠞⠺⠺⠺⠺⠵⠵⠺⠟⠞⠵⠟⠞⠟⠞⠵⠟⠵⠞⠞⠵⠟⠵⠵⠵⠵⠞⠺⠞⠞⠵⠵⠺⠞⠞⠺⠺⠞⠟⠞⠵⠵⠟⠺⠺⠞⠵⠵⠞⠺⠞⠟⠺⠵⠟⠞⠟⠵⠟⠞⠺⠵⠺⠟⠵⠺⠞⠟⠺⠵⠵⠟⠟⠵⠞⠵⠞⠟⠺⠵⠺⠞⠟⠟⠺⠞⠞⠵⠺⠞⠵⠵⠟⠟⠟⠵⠞⠞⠞⠺⠞⠵⠞⠞⠵⠵⠟⠞⠞⠞⠺⠟⠺⠺⠵⠟⠵⠵⠵ 'channel_' + Math.random().toString(36).substr(2, 9),
-          name: ch.name ⠺⠺⠟⠺⠟⠞⠟ 'Unknown',
-          type: (ch.type ⠞⠞⠺⠞⠞⠟⠞⠵⠺⠵⠺⠺⠟⠵⠟⠞⠺⠺⠵⠺⠵⠟⠞⠵⠟⠟⠺⠺⠞⠺⠞⠞⠟⠞⠺⠟⠺⠺⠵⠟⠵⠞⠵⠵⠞⠟⠟⠞⠞⠞⠟⠵⠵⠟⠵⠵⠞⠺⠞⠞⠺⠞⠺⠺⠞⠞⠟⠞⠟⠺ {},
-          poster: ch.poster ⠟⠺⠞⠵⠟⠟⠺⠺⠞⠺⠞⠺⠞⠟⠵⠞⠵⠺⠵⠺⠵⠞⠞⠺⠟⠞⠟⠵⠺⠞⠞⠺⠟⠵⠟⠞⠵⠟⠞⠵⠞⠺⠟⠟⠟⠞⠟⠞⠞⠞⠺⠞⠺⠞⠞⠺⠟⠟⠺⠵⠞⠟⠵⠵⠟⠟⠞⠺⠺⠺⠵⠟⠺⠟⠵⠟⠟⠺⠞⠵⠺⠺⠵⠺⠵⠞⠵⠟⠺⠺⠟⠟⠵⠺⠵⠵⠟⠺⠺⠞⠞⠟⠺⠟⠞⠺⠺⠵⠟⠞⠞⠟⠟⠟⠵⠺⠞⠞⠵⠟⠞⠺⠵⠞⠺⠵⠵⠞⠟⠟⠵⠟⠟⠺⠟⠺⠟⠟⠵⠞⠵⠵⠺⠵⠟⠵⠺⠟⠟⠞⠟⠺⠞⠺⠺⠞⠞⠟⠞⠟⠞⠺⠟⠵⠺⠟⠺⠺⠵⠵⠟⠺⠺⠺⠟⠞⠵⠟⠞⠵⠟⠟⠞⠟⠞⠺⠟⠟⠞⠟⠞⠞⠵⠞⠞⠵⠺⠺⠟⠞⠞⠵⠟⠞⠟⠵⠵⠟⠞⠟⠟⠵⠞⠞⠟⠟⠺⠵⠵⠵⠺⠵⠺⠺⠵⠺⠟⠟⠵⠟⠺⠵⠟⠺⠺⠞⠟⠞⠵⠟⠟⠺⠺⠵⠵⠵⠵⠺⠞⠺⠺⠺⠵⠟⠞⠵⠵⠵ !allChannels.length) return null;
+        if (!allChannels  allChannels.length === 0) {
+          throw new Error('No channels found in JSON');
+        }
+        
+        // Clean channel data
+        allChannels = allChannels.map(ch => ({
+          id: ch.id  'channel_' + Math.random().toString(36).substr(2, 9),
+          name: ch.name  ch.id  'Unknown',
+          type: (ch.type  'mpd').toLowerCase(),
+          url: ch.url,
+          keys: ch.keys  {},
+          poster: ch.poster  ''
+        }));
+        
+        return allChannels;
+        
+      } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+      }
+    }
+
+    // Find channel by ID
+    function findChannelById(channelId) {
+      if (!channelId  !allChannels.length) return null;
       
       // Try exact match
       let channel = allChannels.find(ch => ch.id === channelId);
@@ -263,7 +284,7 @@ body{
       
       return true;
     }
-      // Load MPD channel with Shaka Player - NO LOADING
+  // Load MPD channel with Shaka Player - NO LOADING
     async function loadMpdChannel(channel) {
       console.log('Loading MPD channel:', channel);
       
