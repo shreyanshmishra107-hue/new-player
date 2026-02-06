@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Offside Verse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Shaka Player -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/controls.min.css" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.ui.min.js" crossorigin="anonymous"></script>
+
+<!-- Disable DevTools -->
+<script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
+
+<style>
+:root{
+  --blue1:#0b3b8c;
+  --blue2:#072b6a;
+  --bg:#0a1733;
+  --text:#ffffff;
+  --border:rgba(255,255,255,.15);
+  --shadow:rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.bar{
+  max-width:980px;
+  margin:14px auto;
+  padding:0 12px;
+}
+
+.pill{
+  background:linear-gradient(90deg,var(--blue1),var(--blue2));
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  font-weight:800;
+  box-shadow:0 8px 20px var(--shadow);
+  border:1px solid var(--border);
+}
+
+/* VIDEO */
+.panel{
+  margin:14px 0;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden;
+  border:3px solid rgba(30,120,255,.25);
+  box-shadow:0 10px 26px var(--shadow);
+}
+
+.shaka-video{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 22px;
+  border-radius:14px;
+  font-weight:700;
+  color:#fff;
+  text-decoration:none;
+  background:transparent;
+  border:2px solid rgba(255,255,255,.85);
+  cursor:pointer;
+}
+
+.btn img{
+  width:20px;
+  height:20px;
+}
+
+.btn:active{
+  transform:translateY(1px);
+}
+
+.row{
+  display:flex;
+  justify-content:center;
+}
+
+/* ===== DUAL SECTIONS (LIKE IMAGE) ===== */
+.dual-sections{
+  display:flex;
+  gap:20px;
+  margin:16px 0;
+}
+
+.section{
+  flex:1;
+  background:linear-gradient(90deg,var(--blue1),var(--blue2));
+  border-radius:18px;
+  padding:22px;
+  text-align:center;
+  box-shadow:0 8px 20px var(--shadow);
+  border:1px solid var(--border);
+}
+
+.section h3{
+  margin:0 0 16px;
+  font-size:18px;
+  font-weight:800;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .dual-sections{
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bar">
+
+  <div class="pill">Offside Verse</div>
+
+  <div class="panel">
+    <video id="video"
+      class="shaka-video"
+      data-shaka-player
+      autoplay
+      muted
+      playsinline
+      poster="https://ik.imagekit.io/offsideverse/ChatGPT%20Image%20Feb%206,%202026,%2008_57_27%20AM.png">
+    </video>
+  </div>
+
+  <!-- SIDE BY SIDE SECTIONS -->
+  <div class="dual-sections">
+
+    <!-- TELEGRAM -->
+    <div class="section">
+      <h3>📣 Follow us for Updates!</h3>
+      <div class="row">
+        <a class="btn"
+           href="https://t.me/+7VkflslOE9s4YjQ9"
+           target="_blank"
+           rel="noopener">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/768px-Telegram_logo.svg.png">
+          Click Here To Join Telegram For More Links
+        </a>
+      </div>
+    </div>
+
+    <!-- SHARE -->
+    <div class="section">
+      <h3>Copy Link & Open in Chrome Browser Only</h3>
+      <div class="row">
+        <button class="btn"
+          onclick="navigator.share ? navigator.share({url: location.href}) : alert(location.href)">
+          Click Here To Share This Page Link ❤️
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const FALLBACK_STREAM = "https://example.com/lala.php";
+
+async function initPlayer(){
+  const video = document.getElementById("video");
+  shaka.polyfill.installAll();
+  const player = new shaka.Player(video);
+
+  try{
+    const params = new URLSearchParams(location.search);
+    const streamId = params.get("id");
+
+    let manifestUri = FALLBACK_STREAM;
+    let drmConfig = null;
+
+    if(streamId){
+      const res = await fetch("https://offsidejson.vercel.app/channel.json");
+      const data = await res.json();
+      const stream = data.find(s => s.id === streamId);
+
+      if(stream?.m3u8){
+        manifestUri = stream.m3u8;
+      }
+      else if(stream?.mpd && stream?.key){
+        manifestUri = stream.mpd;
+        const [kid,key] = stream.key.split(":");
+        drmConfig = { clearKeys:{ [kid.trim()]: key.trim() } };
+      }
+    }
+
+    if(drmConfig) player.configure({ drm: drmConfig });
+    await player.load(manifestUri);
+
+  }catch(e){
+    console.error(e);
+    await player.load(FALLBACK_STREAM);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initPlayer);
+</script>
+
+</body>
+</html>
